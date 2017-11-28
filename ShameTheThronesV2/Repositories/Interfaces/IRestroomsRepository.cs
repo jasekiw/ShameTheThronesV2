@@ -3,12 +3,12 @@ using ShameTheThronesV2.Models;
 
 namespace ShameTheThronesV2.Repositories.Interfaces
 {
-    public interface IRestroomsRespository
+    public interface IRestroomsRepository
     {
         ICollection<Restroom> getRestrooms();
 
         Restroom getRestroomById(int id);
 
-        void createRestroom(Restroom restroom, bool attach = false);
+        Restroom createRestroom(Restroom restroom, bool attach = false);
     }
 }

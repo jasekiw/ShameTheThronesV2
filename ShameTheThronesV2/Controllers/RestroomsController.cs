@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShameTheThronesV2.DB;
 using ShameTheThronesV2.Models;
 using ShameTheThronesV2.Repositories;
 using ShameTheThronesV2.Repositories.Interfaces;
+using ShameTheThronesV2.RequestModels;
 
 namespace ShameTheThronesV2.Controllers
 {
@@ -15,17 +17,19 @@ namespace ShameTheThronesV2.Controllers
     public class RestroomsController : Controller
     {
        
-        private readonly IRestroomsRespository _repo;
+        private readonly IRestroomsRepository _repo;
         
-        public RestroomsController(IRestroomsRespository repo)
+        public RestroomsController(IRestroomsRepository repo)
         {
             _repo = repo;
         }
         // GET api/values
         [HttpGet]
-        public IEnumerable<Restroom> Get()
+        public ActionResult Get(RestroomSearchRequest request)
         {
-            return _repo.getRestrooms();
+            if (!ModelState.IsValid)
+                return new BadRequestObjectResult(ModelState);
+            return Json(_repo.getRestrooms());
         }
 
         // GET api/values/5
@@ -37,9 +41,11 @@ namespace ShameTheThronesV2.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] Restroom value)
+        public ActionResult Post([FromBody] CreateRestroomRequest request)
         {
-            _repo.createRestroom(value, true);
+            if (!ModelState.IsValid)
+                return new BadRequestObjectResult(ModelState);
+           return new ObjectResult(_repo.createRestroom(request, true));
         }
 
         // PUT api/values/5

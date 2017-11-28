@@ -8,6 +8,7 @@ namespace ShameTheThronesV2.DB
     public partial class ShameTheThronesContext : DbContext
     {
         public DbSet<Restroom> Restrooms { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
 
         public ShameTheThronesContext(DbContextOptions<ShameTheThronesContext> options) : base(options)
         { }
@@ -19,7 +20,6 @@ namespace ShameTheThronesV2.DB
             
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {  }
+     
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -23,27 +24,62 @@ namespace ShameTheThronesV2
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ShameTheThronesContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ShameTheThronesDatabase")));
-            services.AddTransient<IRestroomsRespository, RestroomRespository>();
+            {
+                var conString = Configuration.GetConnectionString("ShameTheThronesDatabase");
+                options.UseSqlServer(conString);
+            });
+
+   
+            services.AddTransient<IRestroomsRepository, RestroomRepository>();
+            services.AddTransient<RatingRepository, RatingRepository>();
             services.AddMvc();
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            Configuration = getConfiguration(env);
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<ShameTheThronesContext>();
+                    DbInitializer.Initialize(context);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while seeding the database.");
+                }
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
+        
             app.UseMvc();
+        }
+
+        protected IConfiguration getConfiguration(IHostingEnvironment env)
+        {
+
+            string basePath = Directory.GetCurrentDirectory();
+            var builder = new ConfigurationBuilder();
+            builder.SetBasePath(basePath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            builder.AddEnvironmentVariables();
+            return builder.Build();
         }
     }
 }

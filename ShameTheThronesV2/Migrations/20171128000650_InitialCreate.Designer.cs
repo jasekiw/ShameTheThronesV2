@@ -11,7 +11,7 @@ using System;
 namespace ShameTheThronesV2.Migrations
 {
     [DbContext(typeof(ShameTheThronesContext))]
-    [Migration("20171031025653_InitialCreate")]
+    [Migration("20171128000650_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,13 +31,13 @@ namespace ShameTheThronesV2.Migrations
                     b.Property<string>("Content")
                         .IsRequired();
 
-                    b.Property<DateTime?>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<DateTime?>("DeletedAt");
 
                     b.Property<int?>("RatingID");
 
-                    b.Property<DateTime?>("UpdatedAt");
+                    b.Property<DateTime>("UpdatedAt");
 
                     b.Property<int?>("UserID");
 
@@ -60,19 +60,19 @@ namespace ShameTheThronesV2.Migrations
                     b.Property<string>("Content")
                         .IsRequired();
 
-                    b.Property<DateTime?>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<DateTime?>("DeletedAt");
 
-                    b.Property<int?>("RestroomID");
+                    b.Property<int>("RestroomId");
 
-                    b.Property<DateTime?>("UpdatedAt");
+                    b.Property<DateTime>("UpdatedAt");
 
                     b.Property<double>("Value");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("RestroomID");
+                    b.HasIndex("RestroomId");
 
                     b.ToTable("Ratings");
                 });
@@ -82,29 +82,26 @@ namespace ShameTheThronesV2.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Address");
-
-                    b.Property<string>("City");
-
-                    b.Property<DateTime?>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<DateTime?>("DeletedAt");
 
-                    b.Property<string>("Description");
+                    b.Property<byte>("Gender");
 
-                    b.Property<byte?>("Gender");
+                    b.Property<decimal>("Lat")
+                        .HasColumnType("decimal(18,14)");
 
-                    b.Property<decimal>("Lat");
+                    b.Property<decimal>("Lng")
+                        .HasColumnType("decimal(18,14)");
 
-                    b.Property<decimal>("Lng");
+                    b.Property<string>("PlaceId")
+                        .IsRequired();
 
-                    b.Property<string>("State");
+                    b.Property<double>("Rating");
 
-                    b.Property<DateTime?>("UpdatedAt");
+                    b.Property<DateTime>("UpdatedAt");
 
                     b.Property<int?>("UserId");
-
-                    b.Property<int?>("ZipCode");
 
                     b.HasKey("ID");
 
@@ -118,14 +115,14 @@ namespace ShameTheThronesV2.Migrations
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime?>("CreatedAt");
+                    b.Property<DateTime>("CreatedAt");
 
                     b.Property<DateTime?>("DeletedAt");
 
                     b.Property<string>("Password")
                         .IsRequired();
 
-                    b.Property<DateTime?>("UpdatedAt");
+                    b.Property<DateTime>("UpdatedAt");
 
                     b.Property<string>("Username")
                         .IsRequired();
@@ -154,7 +151,8 @@ namespace ShameTheThronesV2.Migrations
                 {
                     b.HasOne("ShameTheThronesV2.Models.Restroom")
                         .WithMany("Ratings")
-                        .HasForeignKey("RestroomID");
+                        .HasForeignKey("RestroomId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("ShameTheThronesV2.Models.Restroom", b =>

@@ -10,8 +10,9 @@ namespace ShameTheThronesV2.Tests.Unit
 {
     public class RestroomsController_PostShould
     {
-        private readonly RestroomsController _restroomsController;
-        private readonly Mock<IRestroomsRepository> _mockRepo;
+        private RestroomsController _restroomsController;
+        private Mock<IRestroomsRepository> _mockRepo;
+
         public RestroomsController_PostShould()
         {
             _mockRepo = new Mock<IRestroomsRepository>();
@@ -21,20 +22,26 @@ namespace ShameTheThronesV2.Tests.Unit
         [Fact]
         public void CreateNewRestroom()
         {
+           // prepare
+            var request = new CreateRestroomRequest()
+            {
+                Lat = 38.2540272m,
+                Lng = -85.748971m,
+                Gender = 2,
+                PlaceId = "somePlaceId"
+            };
 
-//            var request = new CreateRestroomRequest()
-//            {
-//                Address = "252 E Market St",
-//                City = "Louisville",
-//                State = "KY",
-//                ZipCode = 40202,
-//                Lat = 38.2540272m,
-//                Lng = -85.748971m,
-//                Gender = 2,
-//                Description = "A nice place"
-//            };
-//            _restroomsController.Post(request);
-//            _mockRepo.Verify(m => m.createRestroom(request, true));
+            // perform action
+            _restroomsController.Post(request);
+
+            // assertions
+            _mockRepo.Verify(m => m.Add(It.Is<Restroom>((val) => 
+                val.Lat == request.Lat.Value &&
+                val.Lng == request.Lng.Value &&
+                val.Gender == request.Gender.Value &&
+                val.PlaceId == request.PlaceId
+            )));
         }
+
     }
 }

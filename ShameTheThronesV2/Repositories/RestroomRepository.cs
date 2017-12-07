@@ -15,20 +15,18 @@ namespace ShameTheThronesV2.Repositories
             _db = db;
         }
         
-        public ICollection<Restroom> getRestrooms()
+        public ICollection<Restroom> Get()
         {
             return _db.Restrooms.ToList();
         }
 
-        public Restroom getRestroomById(int id)
+        public Restroom Get(int id)
         {
             return _db.Restrooms.Find(id);
         }
 
-        public Restroom createRestroom(Restroom restroom, bool attach = false)
+        public Restroom Add(Restroom restroom)
         {
-            if (attach)
-                _db.Restrooms.Attach(restroom);
             _db.Restrooms.Add(restroom);
             _db.SaveChanges();
             return _db.Restrooms.Find(restroom.ID);

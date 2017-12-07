@@ -5,10 +5,10 @@ namespace ShameTheThronesV2.Repositories.Interfaces
 {
     public interface IRestroomsRepository
     {
-        ICollection<Restroom> getRestrooms();
+        ICollection<Restroom> Get();
 
-        Restroom getRestroomById(int id);
+        Restroom Get(int id);
 
-        Restroom createRestroom(Restroom restroom, bool attach = false);
+        Restroom Add(Restroom restroom);
     }
 }

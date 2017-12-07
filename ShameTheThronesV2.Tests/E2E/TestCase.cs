@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using ShameTheThronesV2.DB;
 
-namespace ShameTheThronesV2.Tests.Integration
+namespace ShameTheThronesV2.Tests.E2E
 {
     public class TestCase
     {
@@ -18,6 +18,10 @@ namespace ShameTheThronesV2.Tests.Integration
         private readonly TestServer _server;
         protected readonly HttpClient _client;
         public static IConfiguration Configuration { get; set; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public TestCase()
         {
             _server = new TestServer(new WebHostBuilder()
@@ -47,6 +51,17 @@ namespace ShameTheThronesV2.Tests.Integration
 
             _context = new ShameTheThronesContext(dbBuilder.Options);
             _context.Database.Migrate();
+        }
+
+        protected StringContent Json<T>( T requestModel)
+        {
+            return new StringContent(JsonConvert.SerializeObject(requestModel), Encoding.UTF8, "application/json");
+        }
+
+
+        protected async Task<T> ParseJson<T>(HttpResponseMessage response)
+        {
+            return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
         }
     }
 }

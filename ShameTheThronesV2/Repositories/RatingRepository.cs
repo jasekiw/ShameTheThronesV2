@@ -10,34 +10,39 @@ namespace ShameTheThronesV2.Repositories
 {
     public class RatingRepository
     {
-        private readonly ShameTheThronesContext _db;
+        private readonly ShameTheThronesContext db;
 
         public RatingRepository(ShameTheThronesContext db)
         {
-            _db = db;
+            this.db = db;
         }
 
-     
-        public RatingCreatedResponse addRating(Rating rating)
+
+        public ICollection<Rating> Get(int restroomId)
         {
-             _db.Ratings.Attach(rating);
-            _db.Ratings.Add(rating);
-            _db.SaveChanges();
-            double average =_db.Ratings.Where(r => r.RestroomId == rating.RestroomId).Select(r => r.Value).Average();
-            var restroom = _db.Restrooms.Find(rating.RestroomId);
+            return db.Ratings.Where(r => r.RestroomId == restroomId).ToList();
+        }
+
+        public RatingCreatedResponse Add(Rating rating)
+        {
+            db.Ratings.Attach(rating);
+            db.Ratings.Add(rating);
+            db.SaveChanges();
+
+            var average = db.Ratings.Where(r => r.RestroomId == rating.RestroomId).Select(r => r.Value).Average();
+
+            var restroom = db.Restrooms.Find(rating.RestroomId);
+
             restroom.Rating = average;
-            _db.SaveChanges();
+            db.SaveChanges();
 
             return new RatingCreatedResponse()
             {
-                Rating = _db.Ratings.Find(rating.ID),
+                Rating = db.Ratings.Find(rating.ID),
                 NewAverageRating = average
             };
         }
 
-        public List<Rating> getRatings(int restroomId)
-        {
-            return _db.Ratings.Where(r => r.RestroomId == restroomId).ToList();
-        }
+       
     }
 }

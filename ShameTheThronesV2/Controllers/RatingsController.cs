@@ -3,38 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using ShameTheThronesV2.Middleware;
+using ShameTheThronesV2.Models;
 using ShameTheThronesV2.Repositories;
 using ShameTheThronesV2.RequestModels;
+using ShameTheThronesV2.ResponseModels;
 
 namespace ShameTheThronesV2.Controllers
 {
+    [ValidateModel]
     [Route("api/[controller]")]
     public class RatingsController : Controller
     {
 
-        private readonly RatingRepository _repo;
+        private readonly RatingRepository repo;
 
         public RatingsController(RatingRepository repo)
         {
-            _repo = repo;
+            this.repo = repo;
         }
 
-        // GET api/values
+        // GET api/Ratings
         [HttpGet]
-        public ActionResult Get(int restroomId)
-        {
-            if (!ModelState.IsValid)
-                return new BadRequestObjectResult(ModelState);
-            return Json(_repo.getRatings(restroomId));
-        }
+        public ICollection<Rating> Get(int restroomId) => repo.Get(restroomId);
 
-        // POST api/values
+        /// <summary>
+        /// POST api/Ratings
+        /// </summary>
+        /// <param name="request">A new rating request model.</param>
+        /// <returns> 200: The created rating | 400 </returns>
         [HttpPost]
-        public ActionResult Post([FromBody] CreateRatingRequest request)
-        {
-            if (!ModelState.IsValid)
-                return new BadRequestObjectResult(ModelState);
-            return new ObjectResult(_repo.addRating(request));
-        }
+        public RatingCreatedResponse Post([FromBody] CreateRatingRequest request) => repo.Add(request);
     }
 }

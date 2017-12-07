@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShameTheThronesV2.DB;
+using ShameTheThronesV2.Middleware;
 using ShameTheThronesV2.Models;
 using ShameTheThronesV2.Repositories;
 using ShameTheThronesV2.Repositories.Interfaces;
@@ -13,51 +14,42 @@ using ShameTheThronesV2.RequestModels;
 
 namespace ShameTheThronesV2.Controllers
 {
+    [ValidateModel]
     [Route("api/[controller]")]
     public class RestroomsController : Controller
     {
        
-        private readonly IRestroomsRepository _repo;
+        private readonly IRestroomsRepository repo;
         
         public RestroomsController(IRestroomsRepository repo)
         {
-            _repo = repo;
+            this.repo = repo;
         }
-        // GET api/values
+
+        // GET api/restrooms
         [HttpGet]
-        public ActionResult Get(RestroomSearchRequest request)
-        {
-            if (!ModelState.IsValid)
-                return new BadRequestObjectResult(ModelState);
-            return Json(_repo.getRestrooms());
-        }
+        public ICollection<Restroom> Get(RestroomSearchRequest request) => repo.Get();
 
-        // GET api/values/5
+        // GET api/restrooms/5
         [HttpGet("{id}")]
-        public Restroom Get(int id)
-        {
-            return _repo.getRestroomById(id);
-        }
+        public Restroom Get(int id) => repo.Get(id);
 
-        // POST api/values
+        // POST api/restrooms
         [HttpPost]
-        public ActionResult Post([FromBody] CreateRestroomRequest request)
-        {
-            if (!ModelState.IsValid)
-                return new BadRequestObjectResult(ModelState);
-           return new ObjectResult(_repo.createRestroom(request, true));
-        }
+        public Restroom Post([FromBody] CreateRestroomRequest request) => repo.Add(request);
 
-        // PUT api/values/5
+        // PUT api/restrooms/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+
         }
 
-        // DELETE api/values/5
+        // DELETE api/restrooms/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+
         }
     }
 }
